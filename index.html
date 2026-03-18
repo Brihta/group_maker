@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ustvarjanje skupin</title>
+  <title>Razdeljevalnik skupin</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -206,14 +206,14 @@
       box-shadow: 0 4px 20px rgba(99,102,241,0.12);
     }
     .group-card-header {
-      padding: 14px 16px;
+      padding: 10px 14px;
       display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border);
     }
     .group-member {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 16px;
-      font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 14px;
+      font-size: 13px;
       color: var(--text);
       border-bottom: 1px solid var(--border);
       transition: background 0.12s;
@@ -221,10 +221,59 @@
     .group-member:last-child { border-bottom: none; }
     .group-member:hover { background: var(--surface2); }
     .member-dot {
-      width: 6px; height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+
+    /* ---- Fullscreen presentation view ---- */
+    #present-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: #f4f7ff;
+      padding: 24px;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #present-overlay.active { display: flex; }
+    #present-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; flex-shrink: 0;
+    }
+    #present-grid {
+      flex: 1;
+      display: grid;
+      gap: 14px;
+      overflow: hidden;
+      align-content: start;
+    }
+    .present-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .present-card-title {
+      padding: 8px 14px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .present-names {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex: 1;
+    }
+    .present-name {
+      padding: 6px 14px;
+      font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      border-right: 1px solid rgba(0,0,0,0.05);
+    }
+    .present-name:nth-child(even) { border-right: none; }
 
     /* ---- Modal ---- */
     .modal-overlay {
@@ -367,7 +416,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="19" cy="11" r="3"/><path d="M22 21v-1a3 3 0 0 0-3-3"/></svg>
       </div>
       <div>
-        <h1 id="app-title" class="logo-text" style="font-size:22px;line-height:1.1;">Ustvarjanje skupin</h1>
+        <h1 id="app-title" class="logo-text" style="font-size:22px;line-height:1.1;">Razdeljevalnik skupin</h1>
         <p id="subtitle" style="font-size:12px;color:var(--muted);margin-top:1px;">Ustvarite skupine učencev v sekundi</p>
       </div>
     </div>
@@ -492,13 +541,19 @@
         <h2 style="font-size:16px;font-weight:600;color:var(--text);">Vaše skupine</h2>
         <span id="group-count-pill" class="count-badge" style="font-size:11px;"></span>
       </div>
-      <button id="btn-reshuffle" class="btn-secondary" style="padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:6px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
-        Premešaj
-      </button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="btn-present" class="btn-primary" style="padding:8px 16px;font-size:13px;display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Prikaži otrokom
+        </button>
+        <button id="btn-reshuffle" class="btn-secondary" style="padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
+          Premešaj
+        </button>
+      </div>
     </div>
 
-    <div id="groups-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:16px;"></div>
+    <div id="groups-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;"></div>
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button id="btn-save-groups" class="btn-secondary" style="padding:9px 16px;font-size:13px;display:flex;align-items:center;gap:6px;">
@@ -514,6 +569,27 @@
 
   <div style="height:32px;"></div>
 </main>
+
+<!-- ===== FULLSCREEN PRESENTATION ===== -->
+<div id="present-overlay">
+  <div id="present-header">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#1e1b4b;display:flex;align-items:center;gap:10px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      V kateri skupini sem?
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button id="btn-reshuffle-present" style="padding:8px 14px;font-size:13px;font-weight:600;border-radius:10px;background:#f0f4ff;color:#6366f1;border:1px solid rgba(99,102,241,0.2);cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
+        Premešaj
+      </button>
+      <button id="btn-close-present" style="padding:8px 16px;font-size:13px;font-weight:600;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Zapri
+      </button>
+    </div>
+  </div>
+  <div id="present-grid"></div>
+</div>
 
 <!-- ===== SAVED GROUPS MODAL ===== -->
 <div id="saved-groups-modal" class="modal-overlay hidden">
@@ -773,6 +849,45 @@
     section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  function renderPresentation() {
+    const grid = document.getElementById('present-grid');
+    const n = generatedGroups.length;
+
+    // Calculate optimal grid columns to fill the screen
+    const cols = n <= 2 ? n : n <= 4 ? 2 : n <= 6 ? 3 : n <= 8 ? 4 : 4;
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(auto-fill, 1fr)`;
+
+    grid.innerHTML = '';
+    generatedGroups.forEach((group, i) => {
+      const c = GROUP_COLORS[i % GROUP_COLORS.length];
+      // Dynamic font size: bigger groups = smaller names
+      const maxMembers = Math.max(...generatedGroups.map(g => g.length));
+      const nameFontSize = maxMembers <= 5 ? 20 : maxMembers <= 8 ? 17 : maxMembers <= 12 ? 15 : 13;
+      const titleFontSize = nameFontSize + 4;
+
+      const card = document.createElement('div');
+      card.className = 'present-card';
+      card.style.cssText = `border-color:${c.border};`;
+
+      card.innerHTML = `
+        <div class="present-card-title" style="background:${c.bg};border-bottom:2px solid ${c.border};font-size:${titleFontSize}px;color:${c.dot};">
+          <span>Skupina ${i + 1}</span>
+          <span style="font-size:${titleFontSize - 4}px;background:${c.bg};border:1.5px solid ${c.border};border-radius:99px;padding:2px 10px;">${group.length}</span>
+        </div>
+        <div class="present-names">
+          ${group.map(name => `
+            <div class="present-name" style="font-size:${nameFontSize}px;color:#1e1b4b;">
+              <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};flex-shrink:0;"></div>
+              ${escHtml(name)}
+            </div>
+          `).join('')}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
   // ---- Saved Group Projects ----
   function saveGroupsAsProject(name) {
     if (!name.trim()) { showToast('Vnesite ime projekta', 'error'); return; }
@@ -907,6 +1022,21 @@
 
   document.getElementById('btn-generate').addEventListener('click', generateGroups);
   document.getElementById('btn-reshuffle').addEventListener('click', generateGroups);
+
+  document.getElementById('btn-present').addEventListener('click', () => {
+    renderPresentation();
+    document.getElementById('present-overlay').classList.add('active');
+  });
+  document.getElementById('btn-close-present').addEventListener('click', () => {
+    document.getElementById('present-overlay').classList.remove('active');
+  });
+  document.getElementById('btn-reshuffle-present').addEventListener('click', () => {
+    generateGroups();
+    renderPresentation();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('present-overlay').classList.remove('active');
+  });
 
   document.getElementById('btn-save-groups').addEventListener('click', () => {
     const name = prompt('Ime za to razporeditev skupin:');
