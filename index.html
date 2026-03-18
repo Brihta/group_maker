@@ -526,6 +526,27 @@
       <button class="preset-pill" data-mode="count" data-val="2">2 ekipi</button>
     </div>
 
+    <!-- Naming theme -->
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Imena skupin</label>
+      <select id="group-theme" class="input-field w-full" style="padding:10px 36px 10px 12px;font-size:14px;font-family:'Outfit',sans-serif;">
+        <option value="stevilke">🔢 Številke (Skupina 1, 2, 3…)</option>
+        <option value="barve">🎨 Barve (Rdeča, Modra, Zelena…)</option>
+        <option value="zivali">🦁 Živali (Levi, Tigri, Medvedi…)</option>
+        <option value="znanstveniki">🔬 Znani znanstveniki (Einstein, Curie, Tesla…)</option>
+        <option value="planeti">🪐 Planeti (Merkur, Venera, Mars…)</option>
+        <option value="vesolje">✨ Vesolje (Kometi, Supernove, Meglice…)</option>
+        <option value="vreme">🌈 Vreme (Mavrice, Strele, Snežinke…)</option>
+        <option value="gozd">🦊 Gozdne živali (Lisičke, Medvedki, Sove…)</option>
+        <option value="mitska">🐉 Mitska bitja (Zmaji, Samorogi, Feniksi…)</option>
+        <option value="sadje">🍓 Sadje (Jagode, Borovnice, Limone…)</option>
+        <option value="dragulji">💎 Dragulji (Diamanti, Rubini, Smaragdi…)</option>
+        <option value="elementi">🔥 Elementi (Ogenj, Voda, Zemlja, Zrak…)</option>
+        <option value="poklici">🔭 Pustolovci (Raziskovalci, Detektivi, Izumitelji…)</option>
+        <option value="geometrija">📐 Geometrija (Kvadrati, Krogi, Trikotniki…)</option>
+      </select>
+    </div>
+
     <button id="btn-generate" class="btn-primary btn-generate-shimmer w-full" style="padding:15px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
       Ustvari skupine
@@ -803,6 +824,37 @@
     renderGroups();
   }
 
+  // ---- Group Naming Themes ----
+  const THEMES = {
+    stevilke:      { names: (i) => `Skupina ${i+1}`, emoji: '🔢' },
+    barve:         { names: ['Rdeča','Modra','Zelena','Rumena','Vijolična','Oranžna','Roza','Turkizna','Zlata','Srebrna','Bordo','Indigo'], emoji: '🎨' },
+    zivali:        { names: ['Levi','Tigri','Medvedi','Orli','Delfini','Volkovi','Gepardi','Sokoli','Morski psi','Jaguarji','Pantri','Risji'], emoji: '🦁' },
+    znanstveniki:  { names: ['Einstein','Curie','Tesla','Newton','Darwin','Galilei','Hawking','Pasteur','Faraday','Bohr','Feynman','Turing'], emoji: '🔬' },
+    planeti:       { names: ['Merkurji','Venerce','Marsovci','Jupitri','Saturni','Uranusi','Neptuni','Plutoni'], emoji: '🪐' },
+    vesolje:       { names: ['Kometi','Supernove','Meglice','Črne luknje','Zvezde','Galaksije','Meteorji','Pulzarji','Kvarkarji','Nevtroni'], emoji: '✨' },
+    vreme:         { names: ['Mavrice','Snežinke','Strele','Sončki','Oblački','Tornadi','Kapljice','Severni siji','Viharji','Megle'], emoji: '🌈' },
+    gozd:          { names: ['Lisičke','Medvedki','Modre sove','Hitre veverice','Ježki','Srničke','Divji merjasci','Risji','Bobri','Vidri'], emoji: '🦊' },
+    mitska:        { names: ['Zmaji','Samorogi','Feniksi','Vilini','Škrati','Pegazi','Tritoni','Grifoni','Kentavri','Sirene'], emoji: '🐉' },
+    sadje:         { names: ['Jagode','Borovnice','Limone','Jabolka','Banane','Kivi','Maline','Breskve','Mango','Granatna jabolka','Češnje','Lubenice'], emoji: '🍓' },
+    dragulji:      { names: ['Diamanti','Rubini','Smaragdi','Safirji','Biseri','Jantarji','Ametisti','Topazi','Opali','Turmalini'], emoji: '💎' },
+    elementi:      { names: ['Ogenj','Voda','Zemlja','Zrak','Kovina','Les','Grom','Led'], emoji: '🔥' },
+    poklici:       { names: ['Raziskovalci','Detektivi','Arheologi','Izumitelji','Kapitani','Eko-stražarji','Astronavti','Pustolovci','Pionirji','Modri možje'], emoji: '🔭' },
+    geometrija:    { names: ['Kvadrati','Krogi','Trikotniki','Heksagoni','Rombi','Spirale','Piramide','Elipse'], emoji: '📐' },
+  };
+
+  function getGroupName(index) {
+    const themeKey = document.getElementById('group-theme').value;
+    const theme = THEMES[themeKey];
+    if (!theme) return `Skupina ${index + 1}`;
+    if (typeof theme.names === 'function') return theme.names(index);
+    return theme.names[index] || `Skupina ${index + 1}`;
+  }
+
+  function getGroupEmoji() {
+    const themeKey = document.getElementById('group-theme').value;
+    return THEMES[themeKey]?.emoji || '🔢';
+  }
+
   const GROUP_COLORS = [
     { bg: 'rgba(99,102,241,0.08)',  dot: '#6366f1', border: 'rgba(99,102,241,0.2)'  },
     { bg: 'rgba(16,185,129,0.08)',  dot: '#10b981', border: 'rgba(16,185,129,0.2)'  },
@@ -831,7 +883,7 @@
         <div class="group-card-header" style="background:${c.bg};">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};box-shadow:0 0 8px ${c.dot};"></div>
-            <span style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;">Skupina ${i + 1}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;">${getGroupName(i)}</span>
           </div>
           <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:${c.bg};border:1px solid ${c.border};color:${c.dot};">${group.length}</span>
         </div>
@@ -872,7 +924,7 @@
 
       card.innerHTML = `
         <div class="present-card-title" style="background:${c.bg};font-size:${titleFontSize}px;color:${c.dot};">
-          <span>Skupina ${i + 1}</span>
+          <span>${escHtml(getGroupName(i))}</span>
           <span style="font-size:${titleFontSize - 5}px;font-weight:700;background:#fff;border:2px solid ${c.border};border-radius:99px;padding:2px 10px;color:${c.dot};">${group.length}</span>
         </div>
         <div class="present-names">
