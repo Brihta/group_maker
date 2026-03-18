@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Razdeljevalnik skupin</title>
+  <title>Ustvarjanje skupin</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
   <style>
@@ -392,7 +390,7 @@
       <div class="flex items-center gap-2">
         <button id="btn-list-menu" class="btn-ghost" style="padding:7px 10px;font-size:13px;display:flex;align-items:center;gap:5px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          Lists
+          Seznami
         </button>
         <button id="btn-clear-all" class="btn-ghost" style="padding:7px 10px;font-size:13px;color:var(--muted);">Počisti vse</button>
       </div>
@@ -536,34 +534,35 @@
     <div style="width:44px;height:44px;border-radius:12px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </div>
-    <h3 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">Clear all students?</h3>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.5;">This will permanently remove everyone from your roster. This action cannot be undone.</p>
+    <h3 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">Počistiti vse učence?</h3>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.5;">S tem boste trajno odstranili vse učence s seznama. Tega dejanja ni mogoče razveljaviti.</p>
     <div style="display:flex;gap:10px;">
-      <button id="confirm-cancel" class="btn-secondary flex-1" style="padding:11px;">Cancel</button>
-      <button id="confirm-delete" class="btn-danger flex-1" style="padding:11px;">Clear All</button>
+      <button id="confirm-cancel" class="btn-secondary flex-1" style="padding:11px;">Prekliči</button>
+      <button id="confirm-delete" class="btn-danger flex-1" style="padding:11px;">Počisti vse</button>
     </div>
   </div>
 </div>
 
 <!-- ===== SCRIPT ===== -->
 <script>
-  // ---- Config & State ----
-  const defaultConfig = {
-    app_title: 'Group Maker',
-    subtitle_text: 'Create student groups in seconds',
-    background_color: '#f4f7ff',
-    surface_color: '#ffffff',
-    text_color: '#1e1b4b',
-    primary_action_color: '#6366f1',
-    secondary_action_color: '#8b8fad',
-    font_family: 'Outfit',
-    font_size: 14
-  };
+  // ---- Standalone state (no SDK) ----
 
-  let students = [];
+  let students = [];          // { id, name }
   let generatedGroups = [];
-  let currentListId = null;
+  let savedLists = {};        // { [listId]: { name, students[] } }
   let savedGroupProjects = {};
+
+  // ---- Persistence ----
+  function saveToStorage() {
+    localStorage.setItem('gm_students', JSON.stringify(students));
+    localStorage.setItem('gm_lists', JSON.stringify(savedLists));
+    localStorage.setItem('gm_groups', JSON.stringify(savedGroupProjects));
+  }
+  function loadFromStorage() {
+    try { students         = JSON.parse(localStorage.getItem('gm_students')) || []; } catch(e) { students = []; }
+    try { savedLists       = JSON.parse(localStorage.getItem('gm_lists'))    || {}; } catch(e) { savedLists = {}; }
+    try { savedGroupProjects = JSON.parse(localStorage.getItem('gm_groups')) || {}; } catch(e) { savedGroupProjects = {}; }
+  }
 
   function generateUUID() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -584,7 +583,6 @@
     setTimeout(() => { div.style.opacity = '0'; div.style.transform = 'translateX(10px)'; div.style.transition = 'all 0.3s'; setTimeout(() => div.remove(), 320); }, 2600);
   }
 
-  // ---- Escape HTML ----
   function escHtml(str) {
     const d = document.createElement('div');
     d.textContent = str;
@@ -596,102 +594,84 @@
     const container = document.getElementById('student-tags');
     const badge = document.getElementById('student-count-badge');
 
-    badge.textContent = `${students.length} student${students.length !== 1 ? 's' : ''}`;
+    badge.textContent = `${students.length} učenec/učenka`;
+    if (students.length !== 1) badge.textContent = `${students.length} učencev`;
 
     if (students.length === 0) {
-      container.innerHTML = `<p id="empty-msg" style="font-size:13px;color:var(--muted);font-style:italic;padding-top:8px;">No students yet — start typing above!</p>`;
+      container.innerHTML = `<p id="empty-msg" style="font-size:13px;color:var(--muted);font-style:italic;padding-top:8px;">Še ni učencev — začnite tipkati zgoraj!</p>`;
       return;
     }
 
     const existingEls = new Map([...container.children].filter(el => el.dataset.sid).map(el => [el.dataset.sid, el]));
-    const currentIds = new Set(students.map(s => s.__backendId));
+    const currentIds = new Set(students.map(s => s.id));
 
     existingEls.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
     const em = container.querySelector('#empty-msg');
     if (em) em.remove();
 
     students.forEach(s => {
-      if (existingEls.has(s.__backendId)) {
-        existingEls.get(s.__backendId).querySelector('span').textContent = s.name;
-      } else {
+      if (!existingEls.has(s.id)) {
         const tag = document.createElement('div');
-        tag.dataset.sid = s.__backendId;
+        tag.dataset.sid = s.id;
         tag.className = 'student-tag';
-        tag.innerHTML = `<span>${escHtml(s.name)}</span><button class="remove-student" data-id="${s.__backendId}" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+        tag.innerHTML = `<span>${escHtml(s.name)}</span><button class="remove-student" data-id="${s.id}" title="Odstrani"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
         container.appendChild(tag);
       }
     });
   }
 
   // ---- Add/Remove Students ----
-  async function addStudent(name) {
+  function addStudent(name) {
     const trimmed = name.trim();
     if (!trimmed) return;
-    if (students.length >= 999) { showToast('Maximum 999 students reached!', 'error'); return; }
-    const btn = document.getElementById('btn-add');
-    btn.disabled = true; btn.style.opacity = '0.6';
-    const result = await window.dataSdk.create({ name: trimmed, class_name: 'default' });
-    btn.disabled = false; btn.style.opacity = '1';
-    if (!result.isOk) showToast('Failed to add student', 'error');
+    if (students.length >= 999) { showToast('Največ 999 učencev!', 'error'); return; }
+    students.push({ id: generateUUID(), name: trimmed });
+    saveToStorage();
+    renderStudents();
   }
 
-  async function removeStudent(backendId) {
-    const student = students.find(s => s.__backendId === backendId);
-    if (!student) return;
-    const result = await window.dataSdk.delete(student);
-    if (!result.isOk) showToast('Failed to remove student', 'error');
+  function removeStudent(id) {
+    students = students.filter(s => s.id !== id);
+    saveToStorage();
+    renderStudents();
   }
 
-  async function clearAllStudents() {
-    const btn = document.getElementById('confirm-delete');
-    btn.textContent = 'Clearing…';
-    btn.disabled = true;
-    for (const s of [...students]) await window.dataSdk.delete(s);
-    btn.textContent = 'Clear All';
-    btn.disabled = false;
+  function clearAllStudents() {
+    students = [];
+    saveToStorage();
+    renderStudents();
     document.getElementById('confirm-overlay').classList.add('hidden');
-    showToast('All students cleared', 'success');
+    showToast('Vsi učenci so bili odstranjeni', 'success');
   }
 
   // ---- Saved Lists ----
-  async function saveStudentList(listName) {
-    if (!listName.trim()) { showToast('Enter a list name', 'error'); return; }
-    if (students.length === 0) { showToast('Add students before saving', 'error'); return; }
+  function saveStudentList(listName) {
+    if (!listName.trim()) { showToast('Vnesite ime seznama', 'error'); return; }
+    if (students.length === 0) { showToast('Najprej dodajte učence', 'error'); return; }
     const listId = generateUUID();
-    currentListId = listId;
-    const btn = document.getElementById('btn-save-list');
-    btn.textContent = '…'; btn.disabled = true;
-    for (const name of students.map(s => s.name)) {
-      await window.dataSdk.create({ name, class_name: listName, list_id: listId, list_name: listName });
-    }
-    btn.textContent = 'Save'; btn.disabled = false;
+    savedLists[listId] = { name: listName.trim(), students: students.map(s => s.name) };
+    saveToStorage();
     document.getElementById('list-name-input').value = '';
-    showToast(`Saved "${listName}"`, 'success');
+    showToast(`Shranjeno: "${listName}"`, 'success');
     renderSavedLists();
   }
 
   function renderSavedLists() {
     const container = document.getElementById('saved-lists-container');
-    const listMap = {};
-    students.forEach(s => {
-      if (s.list_id) {
-        if (!listMap[s.list_id]) listMap[s.list_id] = { name: s.list_name, id: s.list_id, count: 0 };
-        listMap[s.list_id].count++;
-      }
-    });
-    if (Object.keys(listMap).length === 0) {
-      container.innerHTML = `<p style="font-size:13px;color:var(--muted);font-style:italic;">No saved lists yet</p>`;
+    const lists = Object.entries(savedLists);
+    if (lists.length === 0) {
+      container.innerHTML = `<p style="font-size:13px;color:var(--muted);font-style:italic;">Še ni shranjenih seznamov</p>`;
       return;
     }
-    container.innerHTML = Object.values(listMap).map(list => `
+    container.innerHTML = lists.map(([id, list]) => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);">
         <div>
           <p style="font-size:13px;font-weight:600;color:var(--text);">${escHtml(list.name)}</p>
-          <p style="font-size:11px;color:var(--muted);">${list.count} students</p>
+          <p style="font-size:11px;color:var(--muted);">${list.students.length} učencev</p>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="load-list preset-pill" data-list-id="${list.id}" style="border-color:rgba(167,139,250,0.3);color:var(--accent);background:var(--accent-dim);">Load</button>
-          <button class="delete-list btn-ghost" data-list-id="${list.id}" style="padding:5px 8px;font-size:11px;color:var(--muted);">
+          <button class="load-list preset-pill" data-list-id="${id}" style="border-color:rgba(99,102,241,0.3);color:var(--accent);background:var(--accent-dim);">Naloži</button>
+          <button class="delete-list btn-ghost" data-list-id="${id}" style="padding:5px 8px;font-size:11px;color:var(--muted);">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
           </button>
         </div>
@@ -699,19 +679,21 @@
     `).join('');
   }
 
-  async function loadStudentList(listId) {
-    const listStudents = students.filter(s => s.list_id === listId);
-    if (!listStudents.length) return;
-    for (const s of students) { if (!s.list_id) await window.dataSdk.delete(s); }
-    currentListId = listId;
-    showToast(`Loaded "${listStudents[0].list_name}"`, 'success');
+  function loadStudentList(listId) {
+    const list = savedLists[listId];
+    if (!list) return;
+    students = list.students.map(name => ({ id: generateUUID(), name }));
+    saveToStorage();
+    renderStudents();
+    showToast(`Naloženo: "${list.name}"`, 'success');
     document.getElementById('list-menu').classList.add('hidden');
   }
 
-  async function deleteStudentList(listId) {
-    for (const s of students.filter(s => s.list_id === listId)) await window.dataSdk.delete(s);
-    currentListId = null;
-    showToast('List deleted', 'success');
+  function deleteStudentList(listId) {
+    delete savedLists[listId];
+    saveToStorage();
+    renderSavedLists();
+    showToast('Seznam izbrisan', 'success');
   }
 
   // ---- Group Generation ----
@@ -722,7 +704,7 @@
   }
 
   function generateGroups() {
-    if (students.length < 2) { showToast('Add at least 2 students first', 'error'); return; }
+    if (students.length < 2) { showToast('Dodajte vsaj 2 učenca', 'error'); return; }
     const mode = document.getElementById('group-mode').value;
     const val  = parseInt(document.getElementById('group-value').value) || 2;
     const shuffled = shuffleArray(students.map(s => s.name));
@@ -744,7 +726,6 @@
     renderGroups();
   }
 
-  // Palette for group accents
   const GROUP_COLORS = [
     { bg: 'rgba(99,102,241,0.08)',  dot: '#6366f1', border: 'rgba(99,102,241,0.2)'  },
     { bg: 'rgba(16,185,129,0.08)',  dot: '#10b981', border: 'rgba(16,185,129,0.2)'  },
@@ -761,7 +742,7 @@
     const grid    = document.getElementById('groups-grid');
     const pill    = document.getElementById('group-count-pill');
     section.classList.remove('hidden');
-    pill.textContent = `${generatedGroups.length} groups`;
+    pill.textContent = `${generatedGroups.length} skupin`;
     grid.innerHTML = '';
 
     generatedGroups.forEach((group, i) => {
@@ -773,7 +754,7 @@
         <div class="group-card-header" style="background:${c.bg};">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};box-shadow:0 0 8px ${c.dot};"></div>
-            <span style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;">Group ${i + 1}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;">Skupina ${i + 1}</span>
           </div>
           <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:${c.bg};border:1px solid ${c.border};color:${c.dot};">${group.length}</span>
         </div>
@@ -793,25 +774,24 @@
   }
 
   // ---- Saved Group Projects ----
-  async function saveGroupsAsProject(name) {
-    if (!name.trim()) { showToast('Enter a project name', 'error'); return; }
-    if (!generatedGroups.length) { showToast('Generate groups first', 'error'); return; }
+  function saveGroupsAsProject(name) {
+    if (!name.trim()) { showToast('Vnesite ime projekta', 'error'); return; }
+    if (!generatedGroups.length) { showToast('Najprej ustvarite skupine', 'error'); return; }
     const id = generateUUID();
     savedGroupProjects[id] = {
       id, name: name.trim(),
       timestamp: new Date().toISOString(),
-      groups: generatedGroups,
-      listName: currentListId ? (students.find(s => s.list_id === currentListId)?.list_name || 'Unknown') : 'Ad-hoc'
+      groups: generatedGroups
     };
-    localStorage.setItem('groupProjects', JSON.stringify(savedGroupProjects));
-    showToast(`Saved "${name}"`, 'success');
+    saveToStorage();
+    showToast(`Shranjeno: "${name}"`, 'success');
   }
 
   function renderSavedGroups() {
     const list = document.getElementById('saved-groups-list');
     const projects = Object.values(savedGroupProjects).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     if (!projects.length) {
-      list.innerHTML = `<p style="font-size:14px;color:var(--muted);font-style:italic;padding:8px 0;">No saved group projects yet</p>`;
+      list.innerHTML = `<p style="font-size:14px;color:var(--muted);font-style:italic;padding:8px 0;">Še ni shranjenih skupin</p>`;
       return;
     }
     list.innerHTML = projects.map(proj => `
@@ -819,13 +799,13 @@
         <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px;">
           <div>
             <h4 style="font-size:14px;font-weight:600;color:var(--text);">${escHtml(proj.name)}</h4>
-            <p style="font-size:12px;color:var(--muted);margin-top:2px;">${proj.groups.length} groups · ${proj.groups.reduce((s,g)=>s+g.length,0)} students · ${new Date(proj.timestamp).toLocaleDateString()}</p>
+            <p style="font-size:12px;color:var(--muted);margin-top:2px;">${proj.groups.length} skupin · ${proj.groups.reduce((s,g)=>s+g.length,0)} učencev · ${new Date(proj.timestamp).toLocaleDateString('sl-SI')}</p>
           </div>
-          <button class="delete-project btn-ghost" data-project-id="${proj.id}" style="padding:5px 8px;color:var(--muted);" title="Delete">
+          <button class="delete-project btn-ghost" data-project-id="${proj.id}" style="padding:5px 8px;color:var(--muted);" title="Izbriši">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
           </button>
         </div>
-        <button class="load-project" data-project-id="${proj.id}" style="width:100%;padding:8px;font-size:13px;font-weight:600;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(167,139,250,0.25);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(167,139,250,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">View Groups</button>
+        <button class="load-project" data-project-id="${proj.id}" style="width:100%;padding:8px;font-size:13px;font-weight:600;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(99,102,241,0.25);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(99,102,241,0.18)'" onmouseout="this.style.background='var(--accent-dim)'">Oglej skupine</button>
       </div>
     `).join('');
   }
@@ -836,43 +816,20 @@
     generatedGroups = proj.groups;
     renderGroups();
     document.getElementById('saved-groups-modal').classList.add('hidden');
-    showToast(`Loaded "${proj.name}"`, 'success');
+    showToast(`Naloženo: "${proj.name}"`, 'success');
   }
 
   function deleteGroupProject(id) {
     delete savedGroupProjects[id];
-    localStorage.setItem('groupProjects', JSON.stringify(savedGroupProjects));
+    saveToStorage();
     renderSavedGroups();
-    showToast('Project deleted', 'success');
+    showToast('Projekt izbrisan', 'success');
   }
 
-  // ---- Data SDK ----
-  const dataHandler = {
-    onDataChanged(data) {
-      students = data;
-      renderStudents();
-      renderSavedLists();
-    }
-  };
-
-  // ---- Element SDK ----
-  window.elementSdk.init({
-    defaultConfig,
-    onConfigChange: (config) => {},
-    mapToCapabilities: (config) => ({ recolorables: [], borderables: [], }),
-    mapToEditPanelValues: (config) => new Map([
-      ['app_title', config.app_title || defaultConfig.app_title],
-      ['subtitle_text', config.subtitle_text || defaultConfig.subtitle_text]
-    ])
-  });
-
   // ---- Init ----
-  (async () => {
-    const res = await window.dataSdk.init(dataHandler);
-    if (!res.isOk) showToast('Failed to load data', 'error');
-    const stored = localStorage.getItem('groupProjects');
-    if (stored) { try { savedGroupProjects = JSON.parse(stored); } catch(e) { savedGroupProjects = {}; } }
-  })();
+  loadFromStorage();
+  renderStudents();
+  renderSavedLists();
 
   // ---- Events ----
   document.getElementById('btn-list-menu').addEventListener('click', () => {
@@ -898,18 +855,21 @@
   });
 
   document.getElementById('btn-bulk-toggle').addEventListener('click', () => document.getElementById('bulk-section').classList.toggle('hidden'));
-  document.getElementById('btn-bulk-add').addEventListener('click', async () => {
-    const names = document.getElementById('bulk-input').value.split(/[,\n]/).map(n => n.trim()).filter(Boolean);
+  document.getElementById('btn-bulk-add').addEventListener('click', () => {
+    const raw = document.getElementById('bulk-input').value;
+    const names = raw.split(/[,\n ]+/).map(n => n.trim()).filter(Boolean);
     if (!names.length) return;
-    const btn = document.getElementById('btn-bulk-add');
-    btn.textContent = 'Adding…'; btn.disabled = true;
+    let added = 0;
     for (const name of names) {
-      if (students.length >= 999) { showToast('Max 999 students reached!', 'error'); break; }
-      await window.dataSdk.create({ name, class_name: 'default' });
+      if (students.length >= 999) { showToast('Največ 999 učencev!', 'error'); break; }
+      students.push({ id: generateUUID(), name });
+      added++;
     }
-    btn.textContent = 'Add All Names'; btn.disabled = false;
+    saveToStorage();
+    renderStudents();
     document.getElementById('bulk-input').value = '';
-    showToast(`Added ${names.length} students`, 'success');
+    document.getElementById('bulk-section').classList.add('hidden');
+    showToast(`Dodano ${added} učencev`, 'success');
   });
 
   document.getElementById('student-tags').addEventListener('click', e => {
@@ -926,7 +886,7 @@
   document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden'); });
 
   document.getElementById('group-mode').addEventListener('change', e => {
-    document.getElementById('group-value-label').textContent = e.target.value === 'size' ? 'Students per group' : 'Number of groups';
+    document.getElementById('group-value-label').textContent = e.target.value === 'size' ? 'Učenci v skupini' : 'Število skupin';
   });
   document.getElementById('btn-dec').addEventListener('click', () => {
     const i = document.getElementById('group-value');
@@ -941,7 +901,7 @@
     btn.addEventListener('click', () => {
       document.getElementById('group-mode').value = btn.dataset.mode;
       document.getElementById('group-value').value = btn.dataset.val;
-      document.getElementById('group-value-label').textContent = btn.dataset.mode === 'size' ? 'Students per group' : 'Number of groups';
+      document.getElementById('group-value-label').textContent = btn.dataset.mode === 'size' ? 'Učenci v skupini' : 'Število skupin';
     });
   });
 
@@ -949,7 +909,7 @@
   document.getElementById('btn-reshuffle').addEventListener('click', generateGroups);
 
   document.getElementById('btn-save-groups').addEventListener('click', () => {
-    const name = prompt('Name for this group set:');
+    const name = prompt('Ime za to razporeditev skupin:');
     if (name) saveGroupsAsProject(name);
   });
   document.getElementById('btn-view-saved-groups').addEventListener('click', () => {
