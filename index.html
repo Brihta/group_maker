@@ -6,49 +6,51 @@
   <title>Razdeljevalnik skupin</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg:          #f4f7ff;
+      --bg:          #f5f5f7;
       --surface:     #ffffff;
-      --surface2:    #f0f4ff;
-      --surface3:    #e8eeff;
-      --border:      rgba(99,102,241,0.1);
-      --border-md:   rgba(99,102,241,0.18);
-      --text:        #1e1b4b;
-      --muted:       #8b8fad;
-      --muted2:      #6366a0;
-      --accent:      #6366f1;
-      --accent-dim:  rgba(99,102,241,0.1);
-      --accent-glow: rgba(99,102,241,0.25);
-      --success:     #059669;
-      --danger:      #dc2626;
-      --warning:     #d97706;
+      --surface2:    #f5f5f7;
+      --surface3:    #ebebed;
+      --border:      rgba(0,0,0,0.06);
+      --border-md:   rgba(0,0,0,0.1);
+      --text:        #1d1d1f;
+      --muted:       #86868b;
+      --muted2:      #6e6e73;
+      --accent:      #007aff;
+      --accent-dim:  rgba(0,122,255,0.08);
+      --accent-glow: rgba(0,122,255,0.2);
+      --success:     #34c759;
+      --danger:      #ff3b30;
+      --warning:     #ff9500;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
 
     /* ---- Animations ---- */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     @keyframes popIn {
-      0%   { opacity: 0; transform: scale(0.88); }
-      65%  { transform: scale(1.03); }
+      0%   { opacity: 0; transform: scale(0.92); }
       100% { opacity: 1; transform: scale(1); }
     }
     @keyframes slideDown {
@@ -65,119 +67,124 @@
       100% { background-position: 200% center; }
     }
     @keyframes toastIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to   { opacity: 1; transform: translateX(0); }
+      from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .anim-fade-up { animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) forwards; }
-    .anim-pop     { animation: popIn 0.4s cubic-bezier(.22,1,.36,1) forwards; }
-    .anim-slide   { animation: slideDown 0.3s cubic-bezier(.22,1,.36,1) forwards; }
-    .toast-in     { animation: toastIn 0.3s cubic-bezier(.22,1,.36,1) forwards; }
+    .anim-fade-up { animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) forwards; }
+    .anim-pop     { animation: popIn 0.4s cubic-bezier(.16,1,.3,1) forwards; }
+    .anim-slide   { animation: slideDown 0.35s cubic-bezier(.16,1,.3,1) forwards; }
+    .toast-in     { animation: toastIn 0.35s cubic-bezier(.16,1,.3,1) forwards; }
 
     /* ---- Card / Surface ---- */
     .card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(99,102,241,0.07);
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06);
     }
     .card-inner {
       background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border: none;
+      border-radius: 14px;
     }
 
     /* ---- Inputs ---- */
     .input-field {
       background: var(--surface2);
-      border: 1px solid var(--border-md);
-      border-radius: 10px;
+      border: 1.5px solid transparent;
+      border-radius: 12px;
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: 'Inter', -apple-system, sans-serif;
+      transition: all 0.2s ease;
     }
     .input-field::placeholder { color: var(--muted); }
     .input-field:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-dim);
+      background: var(--surface);
     }
 
     /* ---- Buttons ---- */
     .btn-primary {
       background: var(--accent);
       color: #ffffff;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       font-weight: 600;
-      border-radius: 10px;
-      transition: all 0.18s;
+      border-radius: 12px;
+      transition: all 0.2s ease;
       border: none;
       cursor: pointer;
+      letter-spacing: -0.01em;
     }
     .btn-primary:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px var(--accent-glow);
+      filter: brightness(1.08);
+      box-shadow: 0 2px 12px var(--accent-glow);
+      transform: scale(1.01);
     }
-    .btn-primary:active { transform: scale(0.97) translateY(0); }
+    .btn-primary:active { transform: scale(0.97); }
 
     .btn-secondary {
-      background: var(--surface2);
+      background: rgba(0,0,0,0.04);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       font-weight: 500;
-      border: 1px solid var(--border-md);
-      border-radius: 10px;
-      transition: all 0.18s;
+      border: none;
+      border-radius: 12px;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
     .btn-secondary:hover {
-      background: var(--surface3);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: rgba(0,0,0,0.08);
     }
 
     .btn-ghost {
       background: transparent;
       color: var(--muted2);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       font-weight: 500;
       border: none;
-      border-radius: 8px;
-      transition: all 0.18s;
+      border-radius: 10px;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
-    .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+    .btn-ghost:hover { background: rgba(0,0,0,0.04); color: var(--text); }
 
     .btn-danger {
-      background: rgba(248,113,113,0.12);
+      background: rgba(255,59,48,0.1);
       color: var(--danger);
-      border: 1px solid rgba(248,113,113,0.25);
-      border-radius: 10px;
-      font-family: 'Outfit', sans-serif;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Inter', -apple-system, sans-serif;
       font-weight: 600;
-      transition: all 0.18s;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
-    .btn-danger:hover { background: rgba(248,113,113,0.2); }
+    .btn-danger:hover { background: rgba(255,59,48,0.16); }
 
     /* ---- Student Tag ---- */
     .student-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 12px 5px 10px;
+      padding: 6px 14px 6px 12px;
       background: var(--accent-dim);
-      border: 1px solid rgba(167,139,250,0.2);
+      border: none;
       border-radius: 99px;
       color: var(--accent);
       font-size: 13px;
-      font-weight: 500;
-      animation: popIn 0.3s cubic-bezier(.22,1,.36,1) forwards;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      animation: popIn 0.3s cubic-bezier(.16,1,.3,1) forwards;
+      transition: all 0.15s ease;
+    }
+    .student-tag:hover {
+      background: rgba(0,122,255,0.14);
     }
     .student-tag button {
       display: flex; align-items: center;
-      opacity: 0.5; transition: opacity 0.15s;
+      opacity: 0.4; transition: all 0.15s ease;
       background: none; border: none; cursor: pointer;
       color: var(--accent);
       padding: 0;
@@ -186,8 +193,8 @@
 
     /* ---- Section icon badge ---- */
     .icon-badge {
-      width: 34px; height: 34px;
-      border-radius: 9px;
+      width: 36px; height: 36px;
+      border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
@@ -195,33 +202,35 @@
     /* ---- Group Cards ---- */
     .group-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      border: none;
+      border-radius: 16px;
       overflow: hidden;
-      animation: fadeUp 0.4s cubic-bezier(.22,1,.36,1) both;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.5s cubic-bezier(.16,1,.3,1) both;
+      transition: all 0.25s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.05);
     }
     .group-card:hover {
-      border-color: var(--border-md);
-      box-shadow: 0 4px 20px rgba(99,102,241,0.12);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
     }
     .group-card-header {
-      padding: 10px 14px;
+      padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border);
     }
     .group-member {
-      display: flex; align-items: center; gap: 8px;
-      padding: 5px 14px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 16px;
       font-size: 13px;
+      font-weight: 500;
       color: var(--text);
       border-bottom: 1px solid var(--border);
-      transition: background 0.12s;
+      transition: background 0.15s ease;
     }
     .group-member:last-child { border-bottom: none; }
     .group-member:hover { background: var(--surface2); }
     .member-dot {
-      width: 5px; height: 5px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -230,15 +239,15 @@
     #present-overlay {
       display: none;
       position: fixed; inset: 0; z-index: 100;
-      background: #eef1ff;
-      padding: 20px 28px 28px;
+      background: var(--bg);
+      padding: 24px 32px 32px;
       flex-direction: column;
       overflow: hidden;
     }
     #present-overlay.active { display: flex; }
     #present-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; flex-shrink: 0;
+      margin-bottom: 24px; flex-shrink: 0;
     }
     #present-grid {
       flex: 1;
@@ -249,61 +258,65 @@
     }
     .present-card {
       background: #fff;
-      border-radius: 18px;
+      border-radius: 20px;
       border: 2px solid transparent;
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(99,102,241,0.08);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
     }
     .present-card-title {
-      padding: 12px 18px 10px;
+      padding: 14px 20px 12px;
       font-weight: 800;
       display: flex; align-items: center; justify-content: space-between;
       flex-shrink: 0;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
     .present-names {
       display: flex;
       flex-wrap: wrap;
-      padding: 10px 14px 14px;
-      gap: 6px;
+      padding: 10px 16px 16px;
+      gap: 8px;
     }
     .present-name {
-      display: flex; align-items: center; gap: 7px;
+      display: flex; align-items: center; gap: 8px;
       font-weight: 700;
       background: rgba(0,0,0,0.03);
-      border-radius: 8px;
-      padding: 6px 12px;
+      border-radius: 10px;
+      padding: 8px 14px;
       white-space: nowrap;
+      letter-spacing: -0.01em;
     }
 
     /* ---- Modal ---- */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 50;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(30,27,75,0.35);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
     }
     .modal-box {
-      background: var(--surface);
-      border: 1px solid var(--border-md);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: none;
       border-radius: 20px;
-      padding: 28px;
-      animation: popIn 0.35s cubic-bezier(.22,1,.36,1) forwards;
-      box-shadow: 0 24px 80px rgba(99,102,241,0.18);
+      padding: 32px;
+      animation: popIn 0.35s cubic-bezier(.16,1,.3,1) forwards;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.16);
     }
 
     /* ---- Header gradient line ---- */
     .header-line {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.4;
+      height: 0.5px;
+      background: linear-gradient(90deg, transparent 5%, rgba(0,0,0,0.08) 50%, transparent 95%);
+      opacity: 1;
     }
 
     /* ---- Logo glow ---- */
     .logo-text {
-      font-family: 'Playfair Display', serif;
-      background: linear-gradient(135deg, #6366f1, #4f46e5, #4338ca);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #1d1d1f, #424245);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -313,52 +326,54 @@
     .count-badge {
       background: var(--accent-dim);
       color: var(--accent);
-      border: 1px solid rgba(167,139,250,0.25);
+      border: none;
       border-radius: 99px;
       font-size: 12px;
       font-weight: 600;
-      padding: 3px 12px;
+      padding: 4px 14px;
+      letter-spacing: -0.01em;
     }
 
     /* ---- Select ---- */
     select.input-field {
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c6c90' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
       padding-right: 36px;
       cursor: pointer;
     }
-    select.input-field option { background: #ffffff; color: #1e1b4b; }
+    select.input-field option { background: #ffffff; color: #1d1d1f; }
 
     /* ---- Stepper ---- */
     .stepper-btn {
-      width: 36px; height: 36px;
+      width: 38px; height: 38px;
       display: flex; align-items: center; justify-content: center;
-      background: var(--surface2);
-      border: 1px solid var(--border-md);
-      border-radius: 8px;
+      background: rgba(0,0,0,0.04);
+      border: none;
+      border-radius: 10px;
       color: var(--muted2);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s ease;
       flex-shrink: 0;
     }
-    .stepper-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .stepper-btn:hover { color: var(--accent); background: var(--accent-dim); }
 
     /* ---- Preset pill ---- */
     .preset-pill {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
-      padding: 4px 12px;
+      padding: 6px 14px;
       border-radius: 99px;
-      border: 1px solid var(--border-md);
-      color: var(--muted2);
-      background: var(--surface2);
+      border: none;
+      color: var(--accent);
+      background: var(--accent-dim);
       cursor: pointer;
-      transition: all 0.15s;
-      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s ease;
+      font-family: 'Inter', -apple-system, sans-serif;
+      letter-spacing: -0.01em;
     }
-    .preset-pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .preset-pill:hover { background: rgba(0,122,255,0.16); }
 
     /* ---- Generate button shimmer ---- */
     .btn-generate-shimmer {
@@ -369,38 +384,41 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%);
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
       background-size: 200% 100%;
-      animation: shimmer 2.5s infinite;
+      animation: shimmer 3s ease infinite;
     }
 
     /* ---- Lists panel ---- */
     .lists-panel {
       background: var(--surface2);
-      border: 1px solid var(--border-md);
-      border-radius: 12px;
-      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      padding: 18px;
     }
 
     /* ---- Toast ---- */
     .toast-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 16px;
-      border-radius: 12px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
       font-size: 13px; font-weight: 500;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      border: 1px solid var(--border-md);
-      animation: toastIn 0.3s cubic-bezier(.22,1,.36,1) forwards;
-      font-family: 'Outfit', sans-serif;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      border: none;
+      animation: toastIn 0.35s cubic-bezier(.16,1,.3,1) forwards;
+      font-family: 'Inter', -apple-system, sans-serif;
+      letter-spacing: -0.01em;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
     }
-    .toast-success { background: #ecfdf5; color: var(--success); border-color: rgba(5,150,105,0.25); }
-    .toast-error   { background: #fef2f2; color: var(--danger);  border-color: rgba(220,38,38,0.25); }
-    .toast-info    { background: var(--surface); color: var(--text); }
+    .toast-success { background: rgba(52,199,89,0.12); color: #1a7d35; }
+    .toast-error   { background: rgba(255,59,48,0.12); color: #d42015; }
+    .toast-info    { background: rgba(255,255,255,0.85); color: var(--text); }
 
     /* Section stagger */
     main > section:nth-child(1) { animation-delay: 0.05s; }
-    main > section:nth-child(2) { animation-delay: 0.12s; }
-    main > section:nth-child(3) { animation-delay: 0.19s; }
+    main > section:nth-child(2) { animation-delay: 0.15s; }
+    main > section:nth-child(3) { animation-delay: 0.25s; }
   </style>
 </head>
 <body>
@@ -409,16 +427,16 @@
 <div id="toast" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" style="max-width:320px;"></div>
 
 <!-- ===== HEADER ===== -->
-<header style="border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 30;">
+<header style="background: rgba(245,245,247,0.72); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 30;">
   <div class="header-line"></div>
   <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div style="width:36px;height:36px;border-radius:10px;background:var(--accent-dim);border:1px solid rgba(167,139,250,0.2);display:flex;align-items:center;justify-content:center;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="19" cy="11" r="3"/><path d="M22 21v-1a3 3 0 0 0-3-3"/></svg>
+      <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="19" cy="11" r="3"/><path d="M22 21v-1a3 3 0 0 0-3-3"/></svg>
       </div>
       <div>
         <h1 id="app-title" class="logo-text" style="font-size:22px;line-height:1.1;">Razdeljevalnik skupin</h1>
-        <p id="subtitle" style="font-size:12px;color:var(--muted);margin-top:1px;">Ustvarite skupine učencev v sekundi</p>
+        <p id="subtitle" style="font-size:12px;color:var(--muted);margin-top:2px;font-weight:400;letter-spacing:-0.01em;">Ustvarite skupine učencev v sekundi</p>
       </div>
     </div>
     <span id="student-count-badge" class="count-badge">0 students</span>
@@ -429,13 +447,13 @@
 <main class="max-w-3xl mx-auto px-5 py-7 flex flex-col gap-5">
 
   <!-- ── ROSTER CARD ── -->
-  <section class="card anim-fade-up" style="padding:24px;">
+  <section class="card anim-fade-up" style="padding:28px;">
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-3">
-        <div class="icon-badge" style="background:var(--accent-dim);border:1px solid rgba(167,139,250,0.2);">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="icon-badge" style="background:var(--accent-dim);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <h2 style="font-size:16px;font-weight:600;color:var(--text);">Seznam učencev</h2>
+        <h2 style="font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">Seznam učencev</h2>
       </div>
       <div class="flex items-center gap-2">
         <button id="btn-list-menu" class="btn-ghost" style="padding:7px 10px;font-size:13px;display:flex;align-items:center;gap:5px;">
@@ -450,7 +468,7 @@
     <div id="preloaded-panel" class="lists-panel mb-5">
       <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Naloži razred</p>
       <div class="flex gap-2 mb-2">
-        <select id="preloaded-class" class="input-field flex-1" style="padding:8px 12px;font-size:13px;font-family:'Outfit',sans-serif;">
+        <select id="preloaded-class" class="input-field flex-1" style="padding:8px 12px;font-size:13px;font-family:'Inter',-apple-system,sans-serif;">
           <option value="">Izberi razred…</option>
           <option value="1. A">1. A</option>
           <option value="2. A">2. A</option>
@@ -518,18 +536,18 @@
   </section>
 
   <!-- ── SETTINGS CARD ── -->
-  <section class="card anim-fade-up" style="padding:24px;">
+  <section class="card anim-fade-up" style="padding:28px;">
     <div class="flex items-center gap-3 mb-5">
-      <div class="icon-badge" style="background:var(--surface3);border:1px solid var(--border-md);">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M12 2a10 10 0 0 1 10 10"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14M2 12a10 10 0 0 0 10 10"/></svg>
+      <div class="icon-badge" style="background:rgba(255,149,0,0.1);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M12 2a10 10 0 0 1 10 10"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14M2 12a10 10 0 0 0 10 10"/></svg>
       </div>
-      <h2 style="font-size:16px;font-weight:600;color:var(--text);">Nastavitve skupin</h2>
+      <h2 style="font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">Nastavitve skupin</h2>
     </div>
 
     <div class="grid grid-cols-1 gap-4 mb-5" style="grid-template-columns:1fr 1fr;">
       <div>
         <label for="group-mode" style="display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Način</label>
-        <select id="group-mode" class="input-field w-full" style="padding:10px 36px 10px 12px;font-size:14px;font-family:'Outfit',sans-serif;">
+        <select id="group-mode" class="input-field w-full" style="padding:10px 36px 10px 12px;font-size:14px;font-family:'Inter',-apple-system,sans-serif;">
           <option value="size">Po velikosti skupin</option>
           <option value="count">Po številu skupin</option>
         </select>
@@ -561,7 +579,7 @@
     <!-- Naming theme -->
     <div style="margin-bottom:16px;">
       <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Imena skupin</label>
-      <select id="group-theme" class="input-field w-full" style="padding:10px 36px 10px 12px;font-size:14px;font-family:'Outfit',sans-serif;">
+      <select id="group-theme" class="input-field w-full" style="padding:10px 36px 10px 12px;font-size:14px;font-family:'Inter',-apple-system,sans-serif;">
         <option value="stevilke">🔢 Številke (Skupina 1, 2, 3…)</option>
         <option value="barve">🎨 Barve (Rdeča, Modra, Zelena…)</option>
         <option value="zivali">🦁 Živali (Levi, Tigri, Medvedi…)</option>
@@ -589,10 +607,10 @@
   <section id="results-section" class="hidden anim-fade-up">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div class="icon-badge" style="background:var(--accent-dim);border:1px solid rgba(167,139,250,0.2);">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <div class="icon-badge" style="background:rgba(52,199,89,0.1);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         </div>
-        <h2 style="font-size:16px;font-weight:600;color:var(--text);">Vaše skupine</h2>
+        <h2 style="font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">Vaše skupine</h2>
         <span id="group-count-pill" class="count-badge" style="font-size:11px;"></span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
@@ -627,16 +645,16 @@
 <!-- ===== FULLSCREEN PRESENTATION ===== -->
 <div id="present-overlay">
   <div id="present-header">
-    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#1e1b4b;display:flex;align-items:center;gap:10px;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <div style="font-family:'Inter',-apple-system,sans-serif;font-size:20px;font-weight:800;color:#1d1d1f;display:flex;align-items:center;gap:10px;letter-spacing:-0.03em;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       V kateri skupini sem?
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <button id="btn-reshuffle-present" style="padding:8px 14px;font-size:13px;font-weight:600;border-radius:10px;background:#f0f4ff;color:#6366f1;border:1px solid rgba(99,102,241,0.2);cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px;">
+      <button id="btn-reshuffle-present" style="padding:8px 14px;font-size:13px;font-weight:600;border-radius:12px;background:rgba(0,122,255,0.08);color:#007aff;border:none;cursor:pointer;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;gap:6px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
         Premešaj
       </button>
-      <button id="btn-close-present" style="padding:8px 16px;font-size:13px;font-weight:600;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px;">
+      <button id="btn-close-present" style="padding:8px 16px;font-size:13px;font-weight:600;border-radius:12px;background:#007aff;color:#fff;border:none;cursor:pointer;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;gap:6px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         Zapri
       </button>
@@ -661,8 +679,8 @@
 <!-- ===== CLEAR CONFIRM MODAL ===== -->
 <div id="confirm-overlay" class="modal-overlay hidden">
   <div class="modal-box" style="max-width:360px;width:100%;margin:16px;">
-    <div style="width:44px;height:44px;border-radius:12px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,59,48,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </div>
     <h3 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">Počistiti vse učence?</h3>
     <p style="font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.5;">S tem boste trajno odstranili vse učence s seznama. Tega dejanja ni mogoče razveljaviti.</p>
@@ -1003,7 +1021,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
           </button>
         </div>
-        <button class="load-project" data-project-id="${proj.id}" style="width:100%;padding:8px;font-size:13px;font-weight:600;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(99,102,241,0.25);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(99,102,241,0.18)'" onmouseout="this.style.background='var(--accent-dim)'">Oglej skupine</button>
+        <button class="load-project" data-project-id="${proj.id}" style="width:100%;padding:8px;font-size:13px;font-weight:600;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(99,102,241,0.25);cursor:pointer;font-family:'Inter',-apple-system,sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(99,102,241,0.18)'" onmouseout="this.style.background='var(--accent-dim)'">Oglej skupine</button>
       </div>
     `).join('');
   }
