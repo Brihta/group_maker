@@ -446,6 +446,37 @@
       </div>
     </div>
 
+    <!-- Preloaded Classes Panel -->
+    <div id="preloaded-panel" class="lists-panel mb-5">
+      <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Naloži razred</p>
+      <div class="flex gap-2 mb-2">
+        <select id="preloaded-class" class="input-field flex-1" style="padding:8px 12px;font-size:13px;font-family:'Outfit',sans-serif;">
+          <option value="">Izberi razred…</option>
+          <option value="2. A">2. A</option>
+          <option value="3. A">3. A</option>
+          <option value="3. B">3. B</option>
+          <option value="4. A">4. A</option>
+          <option value="4. B">4. B</option>
+          <option value="5. A">5. A</option>
+          <option value="5. B">5. B</option>
+          <option value="6. A">6. A</option>
+          <option value="6. B">6. B</option>
+          <option value="7. A">7. A</option>
+          <option value="7. B">7. B</option>
+          <option value="7. C">7. C</option>
+          <option value="8. A">8. A</option>
+          <option value="9. A">9. A</option>
+          <option value="9. B">9. B</option>
+        </select>
+        <input id="preloaded-password" type="password" placeholder="Geslo…" class="input-field" style="padding:8px 12px;font-size:13px;width:140px;">
+        <button id="btn-load-preloaded" class="btn-primary" style="padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Naloži
+        </button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);font-style:italic;">Za nalaganje seznama učencev potrebujete geslo.</p>
+    </div>
+
     <!-- Lists Panel -->
     <div id="list-menu" class="hidden lists-panel mb-5 anim-slide">
       <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Shranjeni seznami</p>
@@ -993,12 +1024,49 @@
     showToast('Projekt izbrisan', 'success');
   }
 
+  // ---- Preloaded Encrypted Class Data ----
+  const ENCRYPTED_CLASSES = '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';
+
+  function decryptData(base64, password) {
+    try {
+      const data = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      const key = new TextEncoder().encode(password);
+      const result = new Uint8Array(data.length);
+      for (let i = 0; i < data.length; i++) {
+        result[i] = data[i] ^ key[i % key.length];
+      }
+      return JSON.parse(new TextDecoder().decode(result));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadPreloadedClass() {
+    const cls = document.getElementById('preloaded-class').value;
+    const pwd = document.getElementById('preloaded-password').value;
+    if (!cls) { showToast('Izberite razred', 'error'); return; }
+    if (!pwd) { showToast('Vnesite geslo', 'error'); return; }
+    const data = decryptData(ENCRYPTED_CLASSES, pwd);
+    if (!data || !data[cls]) {
+      showToast('Napačno geslo!', 'error');
+      return;
+    }
+    students = data[cls].map(name => ({ id: generateUUID(), name }));
+    saveToStorage();
+    renderStudents();
+    document.getElementById('preloaded-password').value = '';
+    showToast(`Naložen razred ${cls} (${data[cls].length} učencev)`, 'success');
+  }
+
   // ---- Init ----
   loadFromStorage();
   renderStudents();
   renderSavedLists();
 
   // ---- Events ----
+  document.getElementById('btn-load-preloaded').addEventListener('click', loadPreloadedClass);
+  document.getElementById('preloaded-password').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); loadPreloadedClass(); } });
+
   document.getElementById('btn-list-menu').addEventListener('click', () => {
     const m = document.getElementById('list-menu');
     m.classList.toggle('hidden');
