@@ -842,10 +842,9 @@
 
     if (mode === 'size') {
       const size = Math.max(2, Math.min(val, shuffled.length));
-      for (let i = 0; i < shuffled.length; i += size) groups.push(shuffled.slice(i, i + size));
-      if (groups.length > 1 && groups[groups.length - 1].length === 1) {
-        groups[groups.length - 2].push(groups.pop()[0]);
-      }
+      const numGroups = Math.max(1, Math.round(shuffled.length / size));
+      for (let i = 0; i < numGroups; i++) groups.push([]);
+      shuffled.forEach((name, i) => groups[i % numGroups].push(name));
     } else {
       const n = Math.max(2, Math.min(val, shuffled.length));
       for (let i = 0; i < n; i++) groups.push([]);
