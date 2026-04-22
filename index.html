@@ -1292,7 +1292,8 @@
     if (!cls) { showToast('Izberite razred', 'error'); return; }
     if (!pwd) { showToast('Vnesite geslo', 'error'); return; }
     const data = decryptData(ENCRYPTED_CLASSES, pwd);
-    if (!data || !data[cls]) { showToast('Napačno geslo!', 'error'); return; }
+    if (!data) { showToast('Napačno geslo!', 'error'); return; }
+    if (!data[cls]) { showToast(`Razred ${cls} ni na voljo v podatkih.`, 'error'); return; }
     students = data[cls].map(name => ({ id: generateUUID(), name }));
     absentStudents.clear();
     saveToStorage();
