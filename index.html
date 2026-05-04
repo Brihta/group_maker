@@ -480,12 +480,122 @@
     .student-tag.absent button { color: var(--muted); }
     .student-tag .toggle-absent-name { cursor: pointer; }
 
-    /* ---- Drag and Drop ---- */
-    .group-member[draggable="true"] { cursor: grab; }
-    .group-member[draggable="true"]:active { cursor: grabbing; }
+    /* ---- Drag and Drop (pointer events; works on touch + mouse) ---- */
+    .group-member { cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
+    .group-member:active { cursor: grabbing; }
     .group-member.dragging { opacity: 0.3; background: var(--accent-dim); }
     .group-card.drag-over { box-shadow: 0 0 0 2px var(--accent), 0 4px 24px var(--accent-glow); }
     .drag-handle { pointer-events: none; flex-shrink: 0; }
+    .touch-drag-clone {
+      position: fixed; pointer-events: none; z-index: 1000;
+      background: var(--surface); padding: 8px 14px; border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25); font-size: 13px;
+      font-weight: 600; color: var(--text);
+      border: 1.5px solid var(--accent);
+      transform: translate(-50%, -120%);
+      letter-spacing: -0.01em;
+    }
+
+    /* ---- Per-group color stripe ---- */
+    .group-card { position: relative; }
+    .group-card-stripe {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      border-top-left-radius: 16px; border-top-right-radius: 16px;
+      pointer-events: none;
+    }
+
+    /* ---- Group title edit ---- */
+    .group-title-input {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      background: var(--surface); border: 1.5px solid var(--accent);
+      border-radius: 6px; padding: 1px 6px; outline: none;
+      font-family: inherit; letter-spacing: .01em;
+      min-width: 80px; max-width: 160px;
+    }
+    .group-title-edit-btn {
+      background: transparent; border: none; cursor: pointer; padding: 2px;
+      color: var(--muted); opacity: 0.4; transition: opacity 0.15s;
+      display: flex; align-items: center; border-radius: 4px;
+    }
+    .group-card:hover .group-title-edit-btn { opacity: 1; }
+    .group-title-edit-btn:hover { color: var(--accent); background: var(--accent-dim); opacity: 1; }
+    .group-title-text { cursor: text; }
+
+    /* ---- Group lock ---- */
+    .group-lock-btn {
+      background: transparent; border: none; cursor: pointer; padding: 4px;
+      display: flex; align-items: center; color: var(--muted);
+      border-radius: 6px; transition: all 0.15s;
+    }
+    .group-lock-btn:hover { color: var(--accent); background: var(--accent-dim); }
+    .group-card.locked .group-lock-btn { color: var(--accent); opacity: 1; }
+    .group-card.locked { box-shadow: 0 0 0 2px var(--accent-glow), 0 2px 12px rgba(0,0,0,0.05); }
+    .group-card.locked .group-member { cursor: not-allowed; }
+
+    /* ---- Student name edit input ---- */
+    .student-name-input {
+      background: var(--surface); border: 1.5px solid var(--accent);
+      border-radius: 99px; padding: 5px 12px;
+      font-size: 13px; font-weight: 600; color: var(--text);
+      outline: none; font-family: inherit;
+      min-width: 70px; max-width: 220px;
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    /* ---- Activity timer ---- */
+    @keyframes timerPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.05); }
+    }
+    #timer-bar {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface); border: 1px solid var(--border-md);
+      border-radius: 14px; padding: 4px 6px;
+    }
+    .timer-preset {
+      font-size: 12px; font-weight: 600; padding: 4px 10px;
+      border-radius: 10px; border: none; background: var(--accent-dim);
+      color: var(--accent); cursor: pointer; transition: all 0.15s;
+      font-family: inherit;
+    }
+    .timer-preset:hover { background: rgba(99,102,241,0.22); }
+    .timer-preset.active { background: var(--accent); color: #fff; }
+    .timer-display {
+      font-family: 'Inter', monospace; font-weight: 800;
+      font-size: 22px; letter-spacing: -0.04em;
+      color: var(--text); min-width: 70px; text-align: center;
+      padding: 0 6px;
+    }
+    .timer-display.warning { color: var(--warning); }
+    .timer-display.danger  { color: var(--danger); animation: timerPulse 1s infinite; }
+    .timer-control-btn {
+      background: var(--accent-dim); border: none; cursor: pointer; padding: 6px;
+      color: var(--accent); display: flex; align-items: center;
+      border-radius: 8px; transition: all 0.15s;
+    }
+    .timer-control-btn:hover { background: rgba(99,102,241,0.22); }
+
+    /* ---- Never-together pair tag ---- */
+    .never-pair-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 8px 5px 12px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 99px;
+      color: var(--danger);
+      font-size: 12px; font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .never-pair-tag .arrow { opacity: 0.6; font-weight: 400; }
+    .never-pair-tag button {
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; opacity: 0.45;
+      color: var(--danger); padding: 0; transition: opacity 0.15s;
+    }
+    .never-pair-tag button:hover { opacity: 1; }
+
+    /* ---- Dark-mode presentation fixes ---- */
+    html.dark #present-header .present-title-text { color: var(--text) !important; }
 
     /* Section stagger */
     main > section:nth-child(1) { animation-delay: 0.05s; }
@@ -560,6 +670,10 @@
         <svg id="preloaded-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="transition:transform 0.2s;" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
         Naloži razred
       </button>
+      <button id="btn-never-toggle" class="btn-ghost" style="padding:6px 10px;font-size:13px;display:flex;align-items:center;gap:5px;" aria-expanded="false">
+        <svg id="never-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="transition:transform 0.2s;" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        Nezdružljivi pari
+      </button>
     </div>
 
     <div id="bulk-section" class="hidden anim-slide" style="margin-top:8px;margin-bottom:8px;">
@@ -597,6 +711,23 @@
           </button>
         </div>
         <p style="font-size:11px;color:var(--muted);font-style:italic;">Za nalaganje seznama učencev potrebujete geslo.</p>
+      </div>
+    </div>
+
+    <!-- Never-together Panel -->
+    <div id="never-panel" class="hidden anim-slide" style="margin-top:8px;margin-bottom:8px;">
+      <div class="lists-panel">
+        <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Pari, ki ne smejo biti v isti skupini</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <select id="never-select-1" class="input-field" style="padding:8px 12px;font-size:13px;flex:1;min-width:120px;font-family:'Inter',-apple-system,sans-serif;"></select>
+          <span style="color:var(--muted);font-weight:600;">↔</span>
+          <select id="never-select-2" class="input-field" style="padding:8px 12px;font-size:13px;flex:1;min-width:120px;font-family:'Inter',-apple-system,sans-serif;"></select>
+          <button id="btn-add-never" class="btn-primary" style="padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:5px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Dodaj
+          </button>
+        </div>
+        <div id="never-pairs-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;min-height:24px;"></div>
       </div>
     </div>
 
@@ -706,6 +837,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
           Premešaj
         </button>
+        <button id="btn-undo" class="btn-secondary hidden" style="padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:6px;" aria-label="Razveljavi (Ctrl/Cmd+Z)" title="Razveljavi (Ctrl/Cmd+Z)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7L3 9"/></svg>
+          Razveljavi
+        </button>
       </div>
     </div>
 
@@ -733,11 +868,24 @@
 <!-- ===== FULLSCREEN PRESENTATION ===== -->
 <div id="present-overlay">
   <div id="present-header">
-    <div style="font-family:'Inter',-apple-system,sans-serif;font-size:20px;font-weight:800;color:#1d1d1f;display:flex;align-items:center;gap:10px;letter-spacing:-0.03em;">
+    <div class="present-title-text" style="font-family:'Inter',-apple-system,sans-serif;font-size:20px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px;letter-spacing:-0.03em;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       V kateri skupini sem?
     </div>
-    <div style="display:flex;gap:8px;align-items:center;">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div id="timer-bar" aria-label="Časovnik">
+        <button class="timer-preset" data-min="1">1m</button>
+        <button class="timer-preset" data-min="3">3m</button>
+        <button class="timer-preset" data-min="5">5m</button>
+        <button class="timer-preset" data-min="10">10m</button>
+        <span id="timer-display" class="timer-display">00:00</span>
+        <button id="timer-toggle" class="timer-control-btn" aria-label="Začni/premor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20"/></svg>
+        </button>
+        <button id="timer-reset" class="timer-control-btn" aria-label="Ponastavi časovnik">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+      </div>
       <button id="btn-reshuffle-present" style="padding:8px 14px;font-size:13px;font-weight:600;border-radius:12px;background:rgba(99,102,241,0.1);color:#6366f1;border:none;cursor:pointer;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;gap:6px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.11"/></svg>
         Premešaj
@@ -788,6 +936,10 @@
   let savedGroupProjects = {};
   let absentStudents = new Set();
   let pairingHistory = {};
+  let lockedGroupContents = []; // [[name1, name2, ...], ...] — locked group rosters
+  let customGroupNames = {};    // { 0: "Plavalci", 1: "Tekači" } — keyed by group index
+  let neverTogether = [];       // [[id1, id2], ...]
+  let undoStack = [];           // stack of generatedGroups snapshots for undo
 
   // ---- Persistence ----
   function saveToStorage() {
@@ -796,6 +948,9 @@
     localStorage.setItem('gm_groups', JSON.stringify(savedGroupProjects));
     localStorage.setItem('gm_absent', JSON.stringify([...absentStudents]));
     localStorage.setItem('gm_history', JSON.stringify(pairingHistory));
+    localStorage.setItem('gm_locked', JSON.stringify(lockedGroupContents));
+    localStorage.setItem('gm_customnames', JSON.stringify(customGroupNames));
+    localStorage.setItem('gm_never', JSON.stringify(neverTogether));
   }
   function loadFromStorage() {
     try { students           = JSON.parse(localStorage.getItem('gm_students')) || []; } catch(e) { students = []; }
@@ -803,6 +958,9 @@
     try { savedGroupProjects = JSON.parse(localStorage.getItem('gm_groups'))   || {}; } catch(e) { savedGroupProjects = {}; }
     try { absentStudents     = new Set(JSON.parse(localStorage.getItem('gm_absent')) || []); } catch(e) { absentStudents = new Set(); }
     try { pairingHistory     = JSON.parse(localStorage.getItem('gm_history'))  || {}; } catch(e) { pairingHistory = {}; }
+    try { lockedGroupContents = JSON.parse(localStorage.getItem('gm_locked'))  || []; } catch(e) { lockedGroupContents = []; }
+    try { customGroupNames    = JSON.parse(localStorage.getItem('gm_customnames')) || {}; } catch(e) { customGroupNames = {}; }
+    try { neverTogether       = JSON.parse(localStorage.getItem('gm_never'))   || []; } catch(e) { neverTogether = []; }
   }
 
   function generateUUID() {
@@ -917,15 +1075,21 @@
   function removeStudent(id) {
     students = students.filter(s => s.id !== id);
     absentStudents.delete(id);
+    neverTogether = neverTogether.filter(([a, b]) => a !== id && b !== id);
     saveToStorage();
     renderStudents();
+    renderNeverPairs();
   }
 
   function clearAllStudents() {
     students = [];
     absentStudents.clear();
+    neverTogether = [];
+    lockedGroupContents = [];
+    customGroupNames = {};
     saveToStorage();
     renderStudents();
+    renderNeverPairs();
     document.getElementById('confirm-overlay').classList.add('hidden');
     showToast('Vsi učenci so bili odstranjeni', 'success');
   }
@@ -970,8 +1134,11 @@
     if (!list) return;
     students = list.students.map(name => ({ id: generateUUID(), name }));
     absentStudents.clear();
+    neverTogether = [];
+    lockedGroupContents = [];
     saveToStorage();
     renderStudents();
+    renderNeverPairs();
     showToast(`Naloženo: "${list.name}"`, 'success');
     document.getElementById('list-menu').classList.add('hidden');
   }
@@ -1014,28 +1181,187 @@
     return a;
   }
 
+  function pushUndoSnapshot() {
+    if (!generatedGroups.length) return;
+    undoStack.push(JSON.parse(JSON.stringify(generatedGroups)));
+    if (undoStack.length > 20) undoStack.shift();
+  }
+
+  function pruneStaleLocks() {
+    // Drop locked groups that reference unknown or absent students
+    const activeNames = new Set(students.filter(s => !absentStudents.has(s.id)).map(s => s.name));
+    lockedGroupContents = lockedGroupContents.filter(lg => lg.length > 0 && lg.every(n => activeNames.has(n)));
+  }
+
+  function applyNeverTogether(groups) {
+    if (!neverTogether.length || groups.length < 2) return groups;
+    const idToName = new Map(students.map(s => [s.id, s.name]));
+    const pairsByName = neverTogether
+      .map(([a, b]) => [idToName.get(a), idToName.get(b)])
+      .filter(([a, b]) => a && b);
+    if (!pairsByName.length) return groups;
+
+    for (let attempt = 0; attempt < 60; attempt++) {
+      let violation = false;
+      for (const [n1, n2] of pairsByName) {
+        const idx = groups.findIndex(g => g.includes(n1) && g.includes(n2));
+        if (idx === -1) continue;
+        violation = true;
+        // Find a swap target: a group not containing either name
+        let targetIdx = -1;
+        const order = shuffleArray(groups.map((_, i) => i).filter(i => i !== idx));
+        for (const i of order) {
+          if (!groups[i].includes(n1) && !groups[i].includes(n2)) { targetIdx = i; break; }
+        }
+        if (targetIdx === -1) {
+          // fall back to any other group
+          targetIdx = order[0];
+          if (targetIdx === undefined) break;
+        }
+        const memberPos = groups[idx].indexOf(n2);
+        const swapPos = Math.floor(Math.random() * groups[targetIdx].length);
+        [groups[idx][memberPos], groups[targetIdx][swapPos]] =
+          [groups[targetIdx][swapPos], groups[idx][memberPos]];
+      }
+      if (!violation) return groups;
+    }
+    return groups;
+  }
+
   function generateGroups() {
+    pruneStaleLocks();
     const activeStudents = students.filter(s => !absentStudents.has(s.id));
     if (activeStudents.length < 2) { showToast('Dodajte vsaj 2 aktivna učenca', 'error'); return; }
+
+    pushUndoSnapshot();
+
+    // Names already locked into existing groups
+    const lockedNames = new Set();
+    lockedGroupContents.forEach(lg => lg.forEach(n => lockedNames.add(n)));
+
+    const poolNames = activeStudents.map(s => s.name).filter(n => !lockedNames.has(n));
+
     const mode = document.getElementById('group-mode').value;
     const val  = parseInt(document.getElementById('group-value').value) || 2;
-    const shuffled = shuffleArray(activeStudents.map(s => s.name));
-    const groups = [];
+    let newGroups = [];
 
-    if (mode === 'size') {
-      const size = Math.max(2, Math.min(val, shuffled.length));
-      const numGroups = Math.max(1, Math.round(shuffled.length / size));
-      for (let i = 0; i < numGroups; i++) groups.push([]);
-      shuffled.forEach((name, i) => groups[i % numGroups].push(name));
-    } else {
-      const n = Math.max(2, Math.min(val, shuffled.length));
-      for (let i = 0; i < n; i++) groups.push([]);
-      shuffled.forEach((name, i) => groups[i % n].push(name));
+    if (poolNames.length > 0) {
+      const shuffled = shuffleArray(poolNames);
+      if (mode === 'size') {
+        const size = Math.max(2, Math.min(val, shuffled.length));
+        const numGroups = Math.max(1, Math.round(shuffled.length / size));
+        for (let i = 0; i < numGroups; i++) newGroups.push([]);
+        shuffled.forEach((name, i) => newGroups[i % numGroups].push(name));
+      } else {
+        const n = Math.max(2, Math.min(val, shuffled.length));
+        for (let i = 0; i < n; i++) newGroups.push([]);
+        shuffled.forEach((name, i) => newGroups[i % n].push(name));
+      }
+      newGroups = applyNeverTogether(newGroups);
     }
 
-    generatedGroups = groups;
-    recordPairingHistory(groups);
+    // Locked groups stay; new (re-shuffled) groups appended after them
+    generatedGroups = [...lockedGroupContents.map(g => [...g]), ...newGroups];
+
+    recordPairingHistory(generatedGroups);
+    updateUndoButton();
     renderGroups();
+  }
+
+  // ---- Lock groups ----
+  function groupSignature(group) { return [...group].sort().join('|'); }
+
+  function isGroupLocked(idx) {
+    const g = generatedGroups[idx];
+    if (!g) return false;
+    const sig = groupSignature(g);
+    return lockedGroupContents.some(lg => groupSignature(lg) === sig);
+  }
+
+  function toggleGroupLock(idx) {
+    const g = generatedGroups[idx];
+    if (!g) return;
+    const sig = groupSignature(g);
+    const existing = lockedGroupContents.findIndex(lg => groupSignature(lg) === sig);
+    if (existing >= 0) {
+      lockedGroupContents.splice(existing, 1);
+      showToast('Skupina odklenjena', 'success');
+    } else {
+      lockedGroupContents.push([...g]);
+      showToast('Skupina zaklenjena – ostaja pri Premešaj', 'success');
+    }
+    saveToStorage();
+    renderGroups();
+  }
+
+  // ---- Undo ----
+  function undoLastAction() {
+    if (!undoStack.length) return;
+    generatedGroups = undoStack.pop();
+    updateUndoButton();
+    renderGroups();
+    showToast('Razveljavljeno', 'success');
+  }
+
+  function updateUndoButton() {
+    const btn = document.getElementById('btn-undo');
+    if (!btn) return;
+    if (undoStack.length) btn.classList.remove('hidden');
+    else btn.classList.add('hidden');
+  }
+
+  // ---- Never-Together pairs ----
+  function refreshNeverPairSelects() {
+    const sel1 = document.getElementById('never-select-1');
+    const sel2 = document.getElementById('never-select-2');
+    if (!sel1 || !sel2) return;
+    const opts = '<option value="">— izberi —</option>' +
+      students.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+    sel1.innerHTML = opts;
+    sel2.innerHTML = opts;
+  }
+
+  function renderNeverPairs() {
+    refreshNeverPairSelects();
+    const list = document.getElementById('never-pairs-list');
+    if (!list) return;
+    if (!neverTogether.length) {
+      list.innerHTML = '<p style="font-size:12px;color:var(--muted);font-style:italic;">Še ni nezdružljivih parov.</p>';
+      return;
+    }
+    const idToName = new Map(students.map(s => [s.id, s.name]));
+    list.innerHTML = neverTogether.map(([a, b], i) => {
+      const na = idToName.get(a) || '?';
+      const nb = idToName.get(b) || '?';
+      return `<div class="never-pair-tag">
+        <span>${escHtml(na)}</span>
+        <span class="arrow">↔</span>
+        <span>${escHtml(nb)}</span>
+        <button class="remove-never" data-idx="${i}" aria-label="Odstrani par">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  function addNeverPair() {
+    const id1 = document.getElementById('never-select-1').value;
+    const id2 = document.getElementById('never-select-2').value;
+    if (!id1 || !id2) { showToast('Izberi oba učenca', 'error'); return; }
+    if (id1 === id2)  { showToast('Izberi dva različna učenca', 'error'); return; }
+    const exists = neverTogether.some(([a, b]) => (a === id1 && b === id2) || (a === id2 && b === id1));
+    if (exists) { showToast('Par že obstaja', 'error'); return; }
+    neverTogether.push([id1, id2]);
+    saveToStorage();
+    renderNeverPairs();
+    document.getElementById('never-select-1').value = '';
+    document.getElementById('never-select-2').value = '';
+  }
+
+  function removeNeverPair(idx) {
+    neverTogether.splice(idx, 1);
+    saveToStorage();
+    renderNeverPairs();
   }
 
   // ---- Group Naming Themes ----
@@ -1057,6 +1383,9 @@
   };
 
   function getGroupName(index) {
+    if (customGroupNames[index] !== undefined && customGroupNames[index] !== '') {
+      return customGroupNames[index];
+    }
     const themeKey = document.getElementById('group-theme').value;
     const theme = THEMES[themeKey];
     if (!theme) return `Skupina ${index + 1}`;
@@ -1080,58 +1409,111 @@
     { bg: 'rgba(236,72,153,0.08)',  dot: '#ec4899', border: 'rgba(236,72,153,0.2)'  },
   ];
 
-  // ---- Drag and Drop (set up once) ----
-  let dragState = null;
+  // ---- Drag and Drop (Pointer events: works on touch + mouse) ----
+  const DRAG_THRESHOLD = 6; // px before the drag actually starts
+  let dragData = null;
+
+  function clearDragVisuals() {
+    document.querySelectorAll('.group-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+    document.querySelectorAll('.group-member.dragging').forEach(el => el.classList.remove('dragging'));
+  }
 
   function initGroupDragDrop() {
     const grid = document.getElementById('groups-grid');
 
-    grid.addEventListener('dragstart', e => {
-      const member = e.target.closest('.group-member[draggable]');
+    grid.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      // Ignore clicks on interactive child controls
+      if (e.target.closest('.group-lock-btn, .group-title-edit-btn, .group-title-text')) return;
+      const member = e.target.closest('.group-member');
       if (!member) return;
-      dragState = { groupIdx: parseInt(member.dataset.groupIdx), memberIdx: parseInt(member.dataset.memberIdx) };
-      setTimeout(() => member.classList.add('dragging'), 0);
-      e.dataTransfer.effectAllowed = 'move';
+      const groupIdx  = parseInt(member.dataset.groupIdx);
+      const memberIdx = parseInt(member.dataset.memberIdx);
+      if (Number.isNaN(groupIdx) || Number.isNaN(memberIdx)) return;
+      const card = member.closest('.group-card');
+      if (card && card.classList.contains('locked')) return;
+      dragData = {
+        startX: e.clientX, startY: e.clientY,
+        member, groupIdx, memberIdx,
+        name: generatedGroups[groupIdx][memberIdx],
+        clone: null, dragging: false,
+        pointerId: e.pointerId
+      };
     });
 
-    grid.addEventListener('dragend', () => {
-      document.querySelectorAll('.group-member.dragging').forEach(el => el.classList.remove('dragging'));
-      document.querySelectorAll('.group-card.drag-over').forEach(el => el.classList.remove('drag-over'));
-      dragState = null;
-    });
+    document.addEventListener('pointermove', e => {
+      if (!dragData) return;
+      const dx = e.clientX - dragData.startX;
+      const dy = e.clientY - dragData.startY;
 
-    grid.addEventListener('dragover', e => {
-      if (!dragState) return;
-      const card = e.target.closest('.group-card');
-      if (!card) return;
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.group-card.drag-over').forEach(el => el.classList.remove('drag-over'));
-      card.classList.add('drag-over');
-    });
+      if (!dragData.dragging) {
+        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        dragData.dragging = true;
+        dragData.member.classList.add('dragging');
+        try { dragData.member.setPointerCapture(dragData.pointerId); } catch (err) { /* no-op */ }
+        const clone = document.createElement('div');
+        clone.className = 'touch-drag-clone';
+        clone.textContent = dragData.name;
+        document.body.appendChild(clone);
+        dragData.clone = clone;
+      }
 
-    grid.addEventListener('dragleave', e => {
-      const card = e.target.closest('.group-card');
-      if (card && !card.contains(e.relatedTarget)) card.classList.remove('drag-over');
-    });
+      if (dragData.dragging) {
+        e.preventDefault();
+        dragData.clone.style.left = e.clientX + 'px';
+        dragData.clone.style.top  = e.clientY + 'px';
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        const card = target?.closest('.group-card');
+        document.querySelectorAll('.group-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+        if (card && !card.classList.contains('locked')) card.classList.add('drag-over');
+      }
+    }, { passive: false });
 
-    grid.addEventListener('drop', e => {
-      e.preventDefault();
-      const card = e.target.closest('.group-card');
-      if (!card || !dragState) return;
+    const finishDrag = (e) => {
+      if (!dragData) return;
+      const data = dragData;
+      dragData = null;
+
+      if (data.clone) data.clone.remove();
+      clearDragVisuals();
+
+      if (!data.dragging) return;
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      const card = target?.closest('.group-card');
+      if (!card || card.classList.contains('locked')) return;
       const targetIdx = parseInt(card.dataset.groupIdx);
-      const { groupIdx, memberIdx } = dragState;
-      if (targetIdx === groupIdx) { dragState = null; return; }
-      const [moved] = generatedGroups[groupIdx].splice(memberIdx, 1);
+      if (Number.isNaN(targetIdx) || targetIdx === data.groupIdx) return;
+
+      pushUndoSnapshot();
+      const [moved] = generatedGroups[data.groupIdx].splice(data.memberIdx, 1);
       generatedGroups[targetIdx].push(moved);
       generatedGroups = generatedGroups.filter(g => g.length > 0);
-      dragState = null;
+
+      // Re-sync locks: if the affected groups had been locked, the lock signature changed → update or drop
+      lockedGroupContents = lockedGroupContents.filter(lg => {
+        const sig = groupSignature(lg);
+        return generatedGroups.some(g => groupSignature(g) === sig);
+      });
+
+      saveToStorage();
+      updateUndoButton();
       renderGroups();
       showToast(`${moved} premaknjen/a`, 'success');
+    };
+
+    document.addEventListener('pointerup', finishDrag);
+    document.addEventListener('pointercancel', () => {
+      if (dragData?.clone) dragData.clone.remove();
+      clearDragVisuals();
+      dragData = null;
     });
   }
 
   // ---- Render Groups ----
+  const LOCK_OPEN_SVG  = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+  const LOCK_CLOSED_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+  const PENCIL_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+
   function renderGroups() {
     const section = document.getElementById('results-section');
     const grid    = document.getElementById('groups-grid');
@@ -1143,24 +1525,30 @@
     generatedGroups.forEach((group, i) => {
       const c = GROUP_COLORS[i % GROUP_COLORS.length];
       const hasRepeat = groupHasRepeatedPairs(group);
+      const locked = isGroupLocked(i);
       const card = document.createElement('div');
-      card.className = 'group-card';
+      card.className = 'group-card' + (locked ? ' locked' : '');
       card.dataset.groupIdx = i;
       card.style.animationDelay = `${i * 0.06}s`;
       card.innerHTML = `
+        <div class="group-card-stripe" style="background:linear-gradient(90deg, ${c.dot}, ${c.dot} 60%, transparent);"></div>
         <div class="group-card-header" style="background:${c.bg};">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};box-shadow:0 0 8px ${c.dot};"></div>
-            <span style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;">${getGroupName(i)}</span>
+          <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
+            <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};box-shadow:0 0 8px ${c.dot};flex-shrink:0;"></div>
+            <span class="group-title-text" data-group-idx="${i}" title="Klikni za preimenovanje" style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(getGroupName(i))}</span>
+            <button class="group-title-edit-btn" data-edit-group="${i}" aria-label="Uredi ime skupine" title="Uredi ime skupine">${PENCIL_SVG}</button>
           </div>
-          <div style="display:flex;align-items:center;gap:5px;">
+          <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
             ${hasRepeat ? `<span title="Nekateri pari so se v tej skupini že srečali" style="font-size:12px;line-height:1;cursor:default;">🔄</span>` : ''}
             <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:${c.bg};border:1px solid ${c.border};color:${c.dot};">${group.length}</span>
+            <button class="group-lock-btn" data-lock-group="${i}" aria-label="${locked ? 'Odkleni skupino' : 'Zakleni skupino'}" title="${locked ? 'Odkleni skupino' : 'Zakleni skupino (Premešaj jo bo preskočil)'}">
+              ${locked ? LOCK_CLOSED_SVG : LOCK_OPEN_SVG}
+            </button>
           </div>
         </div>
         <div class="group-members">
           ${group.map((name, j) => `
-            <div class="group-member" draggable="true" data-group-idx="${i}" data-member-idx="${j}">
+            <div class="group-member" data-group-idx="${i}" data-member-idx="${j}">
               <div class="member-dot" style="background:${c.dot};flex-shrink:0;"></div>
               <span style="font-size:13px;flex:1;">${escHtml(name)}</span>
               <svg class="drag-handle" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--muted);opacity:0.3;" aria-hidden="true"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>
@@ -1172,6 +1560,90 @@
     });
 
     section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ---- Inline edit: group title ----
+  function startEditGroupName(idx) {
+    const card = document.querySelector(`.group-card[data-group-idx="${idx}"]`);
+    if (!card) return;
+    const titleSpan = card.querySelector('.group-title-text');
+    if (!titleSpan) return;
+    const current = customGroupNames[idx] !== undefined ? customGroupNames[idx] : getGroupName(idx);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = current;
+    input.className = 'group-title-input';
+    input.maxLength = 30;
+    input.setAttribute('aria-label', 'Ime skupine');
+
+    let finished = false;
+    const finish = (save) => {
+      if (finished) return;
+      finished = true;
+      if (save) {
+        const v = input.value.trim();
+        if (!v) delete customGroupNames[idx];
+        else customGroupNames[idx] = v;
+        saveToStorage();
+      }
+      renderGroups();
+    };
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')      { e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape'){ e.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', () => finish(true));
+
+    titleSpan.replaceWith(input);
+    input.focus();
+    input.select();
+  }
+
+  // ---- Inline edit: student name ----
+  function startEditStudentName(id) {
+    const tag = document.querySelector(`.student-tag[data-sid="${id}"]`);
+    if (!tag) return;
+    const span = tag.querySelector('.toggle-absent-name');
+    const student = students.find(s => s.id === id);
+    if (!span || !student) return;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'student-name-input';
+    input.value = student.name;
+    input.maxLength = 50;
+    input.setAttribute('aria-label', 'Ime učenca');
+
+    let finished = false;
+    const finish = (save) => {
+      if (finished) return;
+      finished = true;
+      if (save) {
+        const v = input.value.trim();
+        if (v && v !== student.name) {
+          if (students.some(s => s.id !== id && s.name.toLowerCase() === v.toLowerCase())) {
+            showToast('Učenec s tem imenom že obstaja', 'error');
+            renderStudents();
+            return;
+          }
+          student.name = v;
+          saveToStorage();
+        }
+      }
+      renderStudents();
+    };
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')      { e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape'){ e.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', () => finish(true));
+
+    span.replaceWith(input);
+    input.focus();
+    input.select();
   }
 
   // ---- CSV Export ----
@@ -1209,11 +1681,11 @@
       card.innerHTML = `
         <div class="present-card-title" style="background:${c.bg};font-size:${titleFontSize}px;color:${c.dot};">
           <span>${escHtml(getGroupName(i))}</span>
-          <span style="font-size:${titleFontSize - 5}px;font-weight:700;background:#fff;border:2px solid ${c.border};border-radius:99px;padding:2px 10px;color:${c.dot};">${group.length}</span>
+          <span style="font-size:${titleFontSize - 5}px;font-weight:700;background:var(--surface);border:2px solid ${c.border};border-radius:99px;padding:2px 10px;color:${c.dot};">${group.length}</span>
         </div>
         <div class="present-names">
           ${group.map(name => `
-            <div class="present-name" style="font-size:${nameFontSize}px;color:#1e1b4b;">
+            <div class="present-name" style="font-size:${nameFontSize}px;color:var(--text);">
               <div style="width:${dotSize}px;height:${dotSize}px;border-radius:50%;background:${c.dot};flex-shrink:0;"></div>
               ${escHtml(name)}
             </div>
@@ -1296,10 +1768,107 @@
     if (!data[cls]) { showToast(`Razred ${cls} ni na voljo v podatkih.`, 'error'); return; }
     students = data[cls].map(name => ({ id: generateUUID(), name }));
     absentStudents.clear();
+    neverTogether = [];
+    lockedGroupContents = [];
     saveToStorage();
     renderStudents();
+    renderNeverPairs();
     document.getElementById('preloaded-password').value = '';
     showToast(`Naložen razred ${cls} (${data[cls].length} učencev)`, 'success');
+  }
+
+  // ---- Activity Timer ----
+  const timerState = { duration: 0, remaining: 0, intervalId: null, running: false };
+
+  function formatTime(s) {
+    const m = Math.floor(Math.max(0, s) / 60);
+    const sec = Math.max(0, s) % 60;
+    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  }
+
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    if (!el) return;
+    el.textContent = formatTime(timerState.remaining);
+    el.classList.remove('warning', 'danger');
+    if (timerState.duration > 0 && timerState.remaining > 0) {
+      if (timerState.remaining <= 10)      el.classList.add('danger');
+      else if (timerState.remaining <= 30) el.classList.add('warning');
+    }
+  }
+
+  function updateTimerToggleIcon() {
+    const btn = document.getElementById('timer-toggle');
+    if (!btn) return;
+    btn.innerHTML = timerState.running
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20"/></svg>';
+    btn.setAttribute('aria-label', timerState.running ? 'Premor' : 'Začni');
+  }
+
+  function setTimerPreset(minutes) {
+    timerState.duration  = minutes * 60;
+    timerState.remaining = timerState.duration;
+    if (timerState.intervalId) { clearInterval(timerState.intervalId); timerState.intervalId = null; }
+    timerState.running = false;
+    document.querySelectorAll('.timer-preset').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.min) === minutes);
+    });
+    updateTimerDisplay();
+    updateTimerToggleIcon();
+  }
+
+  function toggleTimer() {
+    if (timerState.duration <= 0) {
+      showToast('Najprej izberi čas', 'error');
+      return;
+    }
+    if (timerState.running) {
+      timerState.running = false;
+      if (timerState.intervalId) { clearInterval(timerState.intervalId); timerState.intervalId = null; }
+    } else {
+      if (timerState.remaining <= 0) timerState.remaining = timerState.duration;
+      timerState.running = true;
+      timerState.intervalId = setInterval(() => {
+        timerState.remaining--;
+        updateTimerDisplay();
+        if (timerState.remaining <= 0) {
+          clearInterval(timerState.intervalId);
+          timerState.intervalId = null;
+          timerState.running = false;
+          updateTimerToggleIcon();
+          onTimerEnd();
+        }
+      }, 1000);
+    }
+    updateTimerToggleIcon();
+  }
+
+  function resetTimer() {
+    if (timerState.intervalId) { clearInterval(timerState.intervalId); timerState.intervalId = null; }
+    timerState.running = false;
+    timerState.remaining = timerState.duration;
+    updateTimerDisplay();
+    updateTimerToggleIcon();
+  }
+
+  function onTimerEnd() {
+    showToast('⏰ Čas je potekel!', 'success');
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 880, 1100].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t0 = ctx.currentTime + i * 0.4;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(0.18, t0 + 0.04);
+        gain.gain.linearRampToValueAtTime(0, t0 + 0.32);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.34);
+      });
+    } catch (e) { /* audio unavailable */ }
   }
 
   // ---- PWA Service Worker ----
@@ -1312,7 +1881,10 @@
   loadFromStorage();
   renderStudents();
   renderSavedLists();
+  renderNeverPairs();
   initGroupDragDrop();
+  updateTimerDisplay();
+  updateTimerToggleIcon();
 
   // ---- Events ----
   document.getElementById('btn-dark-mode').addEventListener('click', toggleDarkMode);
@@ -1383,12 +1955,68 @@
     showToast(msg, 'success');
   });
 
+  let studentClickTimer = null;
   document.getElementById('student-tags').addEventListener('click', e => {
     const removeBtn = e.target.closest('.remove-student');
     if (removeBtn) { removeStudent(removeBtn.dataset.id); return; }
     const nameSpan = e.target.closest('.toggle-absent-name');
-    if (nameSpan) toggleAbsent(nameSpan.dataset.id);
+    if (!nameSpan) return;
+    const id = nameSpan.dataset.id;
+    if (studentClickTimer) clearTimeout(studentClickTimer);
+    studentClickTimer = setTimeout(() => {
+      studentClickTimer = null;
+      toggleAbsent(id);
+    }, 230);
   });
+  document.getElementById('student-tags').addEventListener('dblclick', e => {
+    const nameSpan = e.target.closest('.toggle-absent-name');
+    if (!nameSpan) return;
+    if (studentClickTimer) { clearTimeout(studentClickTimer); studentClickTimer = null; }
+    e.preventDefault();
+    startEditStudentName(nameSpan.dataset.id);
+  });
+
+  // Group cards: lock + edit name buttons (event delegation)
+  document.getElementById('groups-grid').addEventListener('click', e => {
+    const lockBtn = e.target.closest('.group-lock-btn');
+    if (lockBtn) { e.stopPropagation(); toggleGroupLock(parseInt(lockBtn.dataset.lockGroup)); return; }
+    const editBtn = e.target.closest('.group-title-edit-btn');
+    if (editBtn) { e.stopPropagation(); startEditGroupName(parseInt(editBtn.dataset.editGroup)); return; }
+    const titleText = e.target.closest('.group-title-text');
+    if (titleText) { e.stopPropagation(); startEditGroupName(parseInt(titleText.dataset.groupIdx)); return; }
+  });
+
+  // Never-together panel
+  document.getElementById('btn-never-toggle').addEventListener('click', () => {
+    const p = document.getElementById('never-panel');
+    p.classList.toggle('hidden');
+    const open = !p.classList.contains('hidden');
+    document.getElementById('never-chevron').style.transform = open ? 'rotate(90deg)' : '';
+    document.getElementById('btn-never-toggle').setAttribute('aria-expanded', open);
+    if (open) renderNeverPairs();
+  });
+  document.getElementById('btn-add-never').addEventListener('click', addNeverPair);
+  document.getElementById('never-pairs-list').addEventListener('click', e => {
+    const btn = e.target.closest('.remove-never');
+    if (btn) removeNeverPair(parseInt(btn.dataset.idx));
+  });
+
+  // Undo
+  document.getElementById('btn-undo').addEventListener('click', undoLastAction);
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+      if (e.target.matches('input, textarea, [contenteditable]')) return;
+      e.preventDefault();
+      undoLastAction();
+    }
+  });
+
+  // Timer controls (presentation overlay)
+  document.querySelectorAll('.timer-preset').forEach(btn => {
+    btn.addEventListener('click', () => setTimerPreset(parseInt(btn.dataset.min)));
+  });
+  document.getElementById('timer-toggle').addEventListener('click', toggleTimer);
+  document.getElementById('timer-reset').addEventListener('click', resetTimer);
 
   document.getElementById('btn-clear-all').addEventListener('click', () => {
     if (!students.length) return;
