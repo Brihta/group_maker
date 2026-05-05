@@ -1,6 +1,6 @@
 {
-  "name": "Razdeljevalnik skupin",
-  "short_name": "Skupine",
+  "name": "Skupinsko delo",
+  "short_name": "Skupinsko delo",
   "description": "Orodje za razdelitev učencev v skupine",
   "start_url": "./",
   "display": "standalone",
